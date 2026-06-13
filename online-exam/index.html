@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Online Exam System</title>
+<style>
+body { font-family: Arial; text-align: center; }
+.container { margin-top: 50px; }
+input { padding: 8px; margin: 5px; }
+button { padding: 10px; margin: 5px; cursor: pointer; }
+.hidden { display: none; }
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="login" class="container">
+<h2>Login</h2>
+<input id="username" placeholder="Username"><br>
+<input id="password" type="password" placeholder="Password"><br>
+<button onclick="login()">Login</button>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="container hidden">
+<h2>Welcome <span id="userDisplay"></span></h2>
+<button onclick="showExam()">Start Exam</button>
+<button onclick="showProfile()">Profile</button>
+<button onclick="logout()">Logout</button>
+</div>
+
+<!-- EXAM -->
+<div id="exam" class="container hidden">
+<h2>Online Exam</h2>
+<div id="timer"></div>
+
+<form id="examForm">
+<p>1. Capital of India?</p>
+<input type="radio" name="q1" value="Delhi"> Delhi<br>
+<input type="radio" name="q1" value="Mumbai"> Mumbai<br>
+
+<p>2. 2 + 2?</p>
+<input type="radio" name="q2" value="3"> 3<br>
+<input type="radio" name="q2" value="4"> 4<br><br>
+
+<button type="button" onclick="submitExam()">Submit</button>
+</form>
+</div>
+
+<!-- PROFILE -->
+<div id="profile" class="container hidden">
+<h2>Profile</h2>
+
+<input id="name"><br>
+<input id="email"><br>
+<button onclick="updateProfile()">Update</button>
+
+<h3>Change Password</h3>
+<input id="oldPass" placeholder="Old Password"><br>
+<input id="newPass" placeholder="New Password"><br>
+<button onclick="changePassword()">Change Password</button>
+
+<br><br>
+<button onclick="goDashboard()">Back</button>
+</div>
+
+<script>
+// Dummy user data
+let user = {
+    username: "student",
+    password: "1234",
+    name: "Kavya",
+    email: "kavya@email.com"
+};
+
+let loggedIn = false;
+let timerInterval;
+let time = 60;
+
+// LOGIN
+function login() {
+    let u = document.getElementById("username").value;
+    let p = document.getElementById("password").value;
+
+    if (u === user.username && p === user.password) {
+        loggedIn = true;
+        document.getElementById("login").classList.add("hidden");
+        document.getElementById("dashboard").classList.remove("hidden");
+        document.getElementById("userDisplay").innerText = user.name;
+    } else {
+        alert("Invalid Login");
+    }
+}
+
+// SHOW EXAM
+function showExam() {
+    document.getElementById("dashboard").classList.add("hidden");
+    document.getElementById("exam").classList.remove("hidden");
+
+    time = 60;
+    timerInterval = setInterval(() => {
+        document.getElementById("timer").innerText = "Time: " + time;
+        time--;
+
+        if (time < 0) {
+            clearInterval(timerInterval);
+            alert("Time Up! Auto Submit");
+            submitExam();
+        }
+    }, 1000);
+}
+
+// SUBMIT EXAM
+function submitExam() {
+    clearInterval(timerInterval);
+
+    let q1 = document.querySelector('input[name="q1"]:checked');
+    let q2 = document.querySelector('input[name="q2"]:checked');
+
+    let score = 0;
+    if (q1 && q1.value === "Delhi") score++;
+    if (q2 && q2.value === "4") score++;
+
+    alert("Exam Submitted! Score: " + score);
+
+    goDashboard();
+}
+
+// PROFILE
+function showProfile() {
+    document.getElementById("dashboard").classList.add("hidden");
+    document.getElementById("profile").classList.remove("hidden");
+
+    document.getElementById("name").value = user.name;
+    document.getElementById("email").value = user.email;
+}
+
+// UPDATE PROFILE
+function updateProfile() {
+    user.name = document.getElementById("name").value;
+    user.email = document.getElementById("email").value;
+
+    alert("Profile Updated");
+}
+
+// CHANGE PASSWORD
+function changePassword() {
+    let oldP = document.getElementById("oldPass").value;
+    let newP = document.getElementById("newPass").value;
+
+    if (oldP === user.password) {
+        user.password = newP;
+        alert("Password Changed");
+    } else {
+        alert("Wrong Old Password");
+    }
+}
+
+// LOGOUT
+function logout() {
+    loggedIn = false;
+    document.getElementById("dashboard").classList.add("hidden");
+    document.getElementById("login").classList.remove("hidden");
+}
+
+// BACK TO DASHBOARD
+function goDashboard() {
+    document.getElementById("exam").classList.add("hidden");
+    document.getElementById("profile").classList.add("hidden");
+    document.getElementById("dashboard").classList.remove("hidden");
+}
+</script>
+
+</body>
+</html>
